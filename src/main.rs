@@ -1,25 +1,25 @@
-use tetra::graphics::{self, Color};
+use tetra::graphics::{self, Color, DrawParams, Texture};
 use tetra::graphics::text::{Font, Text};
 use tetra::math::Vec2;
 use tetra::{Context, ContextBuilder, State};
 
-// 2D vector used for textBox position configuration
+
+const IMG_POS: Vec2<f32> = Vec2::new(120.0, 120.0);
+const IMG_SCALE: Vec2<f32> = Vec2::new(0.5, 0.5);
+const IMG_ORIGIN: Vec2<f32> = Vec2::new(50.0, 50.0);
 const TEXT_OFFSET: Vec2<f32> = Vec2::new(50.0, 50.0);
 
-// In step2, GameState struct now contains variable vector_text of type Text
-struct GameState = {
+struct GameState {
+    img: Texture,
     vector_text: Text,
 }
 
 impl GameState {
-    // overriding the ContextBuilder new function (Rust constructor)
-    fn new(&mut self, ctx: &mut Context) -> tetra::Result<GameState> {
+    fn new(ctx: &mut Context) -> tetra::Result<GameState> {
         Ok(GameState{
-            // building the vector_text with the "Text" constructor
-            vector_text: Text::new(
-                "Hello, World!\n",
-                // loading Font from assets folder
-                Font::vector(ctx, "../assets/font/DejaVuSansMono.ttf", 50.0)?,
+            img: Texture::new(ctx, "./assets/images/PoC.png")?,
+            vector_text: Text::new("Hello PoC",
+                                Font::vector(ctx, "./assets/font/DejaVuSansMono.ttf", 45.0)?,
             ),
         })
     }
@@ -29,7 +29,11 @@ impl State for GameState {
     fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
         graphics::clear(ctx, Color::rgb(0.78, 0.58, 0.92));
 
-        // drawing vector_text using Text::draw
+        self.img.draw(ctx, DrawParams::new()
+                    .position(IMG_POS)
+                    .scale(IMG_SCALE)
+                    .origin(IMG_ORIGIN),
+        );
         self.vector_text.draw(ctx, TEXT_OFFSET);
         Ok(())
     }
@@ -38,10 +42,8 @@ impl State for GameState {
 
 
 fn main() -> tetra::Result {
-    // println!("Hello, world!");
-    ContextBuilder::new("Hello, World!", 1280, 800)
+    ContextBuilder::new("Step3", 1280, 800)
         .quit_on_escape(true)
         .build()?
-        // running our newly implemented GameState::new function
-        .run(GameState::new))
+        .run(GameState::new)
 }

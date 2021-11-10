@@ -1,0 +1,4 @@
+assets
+.vscode
+target/*
+^target/.rustc_info.json
